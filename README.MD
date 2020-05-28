@@ -2,4 +2,5 @@
 
 # Projeto Exemplo - Terceira Revisão de Spring
 Para rodar: mvn spring-boot:run \
-Para saber a URL: gp url 8080
+Para saber a URL: gp url 8080 \
+Usuário da aplicação: admin / senha: admin
