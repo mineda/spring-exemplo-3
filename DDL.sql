@@ -41,3 +41,15 @@ create table frs_frase (
   foreign key fsr_usr_fk (usr_autor_id) references usr_usuario (usr_id) on delete restrict on update cascade,
   unique key uni_fsr_titulo (frs_titulo)
 );
+
+insert into usr_usuario (usr_nome, usr_email, usr_senha)
+  values ('admin', 'admin@email.com', '$2a$10$i3.Z8Yv1Fwl0I5SNjdCGkOTRGQjGvHjh/gMZhdc3e7LIovAklqM6C');
+
+insert into aut_autorizacao (aut_nome)
+  value ('ROLE_ADMIN');
+
+insert into uau_usuario_autorizacao (usr_id, aut_id)
+  select usr_id, aut_id
+    from usr_usuario, aut_autorizacao
+    where usr_nome = 'admin'
+    and aut_nome = 'ROLE_ADMIN';
