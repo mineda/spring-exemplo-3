@@ -10,44 +10,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.GenericFilterBean;
 
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, 
-            ServletResponse response, 
-            FilterChain chain) 
-                    throws IOException, ServletException {
+    		ServletResponse response, 
+    		FilterChain chain) 
+    				throws IOException, ServletException {
 
         try {
             HttpServletRequest servletRequest = (HttpServletRequest) request;
             String authorization = servletRequest
-                    .getHeader(HttpHeaders.AUTHORIZATION);
+            		.getHeader(HttpHeaders.AUTHORIZATION);
             if (authorization != null) {
-                User usuario = JwtUtils
-                        .parseToken(authorization.replaceAll("Bearer ", ""));
                 Authentication credentials = 
-                        new UsernamePasswordAuthenticationToken(
-                                usuario.getUsername(), 
-                                usuario.getPassword(), 
-                                usuario.getAuthorities());
+                    JwtUtils.parseToken(authorization.replaceAll("Bearer ", ""));
                 SecurityContextHolder.getContext()
-                        .setAuthentication(credentials);
+                		.setAuthentication(credentials);
             }
             chain.doFilter(request, response);
         }
         catch(Throwable t) {
             HttpServletResponse servletResponse = 
-                    (HttpServletResponse) response;
+            		(HttpServletResponse) response;
             servletResponse.sendError(
-                    HttpServletResponse.SC_UNAUTHORIZED, t.getMessage());
+            		HttpServletResponse.SC_UNAUTHORIZED, t.getMessage());
         }
     }
-
 
 }
