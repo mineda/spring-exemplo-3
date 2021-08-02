@@ -6,7 +6,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
 import java.util.Date;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import br.gov.sp.fatec.frasesmotivacionais.controller.UsuarioDTO;
 
@@ -40,22 +43,24 @@ public class JwtUtils {
             .compact();
     }
     
-    public static User parseToken(String token) 
-            throws JsonParseException, JsonMappingException, IOException {
+    public static Authentication parseToken(String token) 
+               throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        String credentialsJson = Jwts.parser()
-                .setSigningKey(KEY)
+        String credentialsJson =
+            Jwts.parser().setSigningKey(KEY)
                 .parseClaimsJws(token)
                 .getBody()
                 .get("userDetails", String.class);
-        UsuarioDTO usuario = mapper
-                .readValue(credentialsJson, UsuarioDTO.class);
-        return (User) User.builder().username(usuario.getNome())
+        Login usuario = mapper.readValue(credentialsJson, Login.class);
+        UserDetails userDetails = 
+            User.builder()
+                .username(usuario.getUsername())
                 .password("secret")
                 .authorities(usuario.getAutorizacao())
                 .build();
+        return new UsernamePasswordAuthenticationToken(usuario.getUsername(),
+            usuario.getPassword(),
+            userDetails.getAuthorities());
     }
-
-    
 
 }
